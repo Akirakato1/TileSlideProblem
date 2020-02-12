@@ -27,7 +27,7 @@ public class GraphSolution {
 	}
 
 	public int find(State in, State out) {
-		generateStates();
+		generateStates(in);
 		generateMap();
 		generateGraph(in);
 		if (stateMap.get(in) == null || stateMap.get(out) == null) {
@@ -38,12 +38,15 @@ public class GraphSolution {
 		return 0;
 	}
 
-	private void generateStates() {
+	private void generateStates(State in) {
+		int nums[]=in.getInputs();
+		int[] empty = {};
+		/*
 		int[] nums = new int[this.w * h];
 		int[] empty = {};
 		for (int i = 0; i < w * h; i++) {
 			nums[i] = i;
-		}
+		}*/
 		generateStatesHelper(empty, nums, new IntegerMutate(0));
 	}
 
@@ -75,7 +78,7 @@ public class GraphSolution {
 	
 	private void printGraph() {
 		for(int i=0; i<graph.length;i++) {
-			System.out.println("Node: "+states[i]+"\nNeighbour: "+Arrays.toString(indexToStates(graph[i])));
+			System.out.println(i+" Node: "+states[i]+"\nNeighbour: "+Arrays.toString(indexToStates(graph[i])));
 		}
 	}
 	private void printIndexGraph(){
@@ -84,7 +87,6 @@ public class GraphSolution {
 			for(int j=0;j<graph[i].size();j++){
 				System.out.println("graph.addLink("+i+", "+graph[i].get(j)+");");
 			}
-
 			//System.out.println(i+" : "+graph[i]);
 		}
 	}
