@@ -1,0 +1,165 @@
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+public class GraphSolution {
+
+	private final int w, h;
+	private State[] states;
+	private Map<State, Integer> stateMap;
+	private List<State>[] graph;
+
+	@SuppressWarnings("unchecked")
+	GraphSolution(int w, int h) {
+		this.w = w;
+		this.h = h;
+		states = new State[factorial(w * h)];
+		stateMap = new HashMap<State, Integer>();
+		graph = new List[factorial(w * h)];
+	}
+
+	public int find(State in, State out) {
+		generateStates();
+		generateMap();
+		generateGraph(in);
+		if (stateMap.get(in) == null || stateMap.get(out) == null) {
+			throw new IllegalArgumentException("instate or outstate not formatted correctly");
+		}
+		
+		//Run dijkstra's -> convert node indexes into list of states -> calculate the  direction to move at every state
+		return 0;
+	}
+
+	private void generateStates() {
+		int[] nums = new int[this.w * h];
+		int[] empty = {};
+		for (int i = 0; i < w * h; i++) {
+			nums[i] = i;
+		}
+		generateStatesHelper(empty, nums, new IntegerMutate(0));
+	}
+
+	private void generateMap() {
+		for (int i = 0; i < states.length; i++) {
+			stateMap.put(states[i], i);
+			System.out.println("State: "+states[i]+" index: "+stateMap.get(states[i]));
+		}
+	}
+
+	private void generateGraph(State in) {
+		initGraph();
+		int emptySpot = in.getEmptySpot();
+		generateGraphHelper(in, 0, emptySpot);
+		generateGraphHelper(in, 1, emptySpot);
+		generateGraphHelper(in, 2, emptySpot);
+		generateGraphHelper(in, 3, emptySpot);
+		printGraph();
+	}
+
+	private void initGraph() {
+		List<State> temp;
+		for (int i = 0; i < graph.length; i++) {
+				temp=new ArrayList<>();
+				graph[i]=temp;
+		}
+	}
+	
+	private void printGraph() {
+		for(int i=0; i<graph.length;i++) {
+			System.out.println("Node: "+states[i]+"\nNeighbour: "+graph[i]);
+			
+		}
+	}
+
+	//direction 0=up, 1=right, 2=down, 3=left
+	private void generateGraphHelper(State currentState, Integer direction, int emptySpot) {
+		if ((emptySpot % w == 0 && direction == 3) || (emptySpot % w == w - 1 && direction == 1)
+				|| (emptySpot < w && direction == 0) || (emptySpot > (h - 1) * w - 1 && direction == 2)) {
+			return;
+		}
+
+		State nextState = swap(currentState, direction, emptySpot);
+		int nextEmptySpot = nextState.getEmptySpot();
+		if (graph[stateMap.get(currentState)].contains(nextState)) {
+			return;
+		}
+		
+		System.out.println("currentState hash: "+stateMap.get(currentState)+"\nnextstate hash: "+stateMap.get(nextState));
+		System.out.println("currentState: "+currentState+"\nnextstate: "+nextState);
+		
+		graph[stateMap.get(currentState)].add(nextState);
+		graph[stateMap.get(nextState)].add(currentState);
+		
+		generateGraphHelper(nextState, 0, nextEmptySpot);
+		generateGraphHelper(nextState, 1, nextEmptySpot);
+		generateGraphHelper(nextState, 2, nextEmptySpot);
+		generateGraphHelper(nextState, 3, nextEmptySpot);
+	}
+
+	// direction 0=up, 1=right, 2=down, 3=left
+	private State swap(State currentState, int direction, int emptySpot) {
+		int[] arr = currentState.getInputs();
+		if (direction == 0) {
+			arr[emptySpot] = arr[emptySpot - w];
+			arr[emptySpot - w] = 0;
+		} else if (direction == 1) {
+			arr[emptySpot] = arr[emptySpot + 1];
+			arr[emptySpot + 1] = 0;
+		} else if (direction == 2) {
+			arr[emptySpot] = arr[emptySpot + w];
+			arr[emptySpot + w] = 0;
+		} else {
+			arr[emptySpot] = arr[emptySpot - 1];
+			arr[emptySpot - 1] = 0;
+		}
+		return new State(arr);
+	}
+
+	private int factorial(int n) {
+		return factorial_t(n, 1);
+	}
+
+	private int factorial_t(int n, int acc) {
+		if (n > 1) {
+			return factorial_t(n - 1, acc * n);
+		}
+		return acc;
+	}
+
+	private void generateStatesHelper(int[] candidate, int[] remaining, IntegerMutate index) {
+		if (remaining.length == 0) {
+			System.out.println(index + "  " + Arrays.toString(candidate));
+			this.states[index.value] = new State(candidate);
+			index.value = index.value + 1;
+		}
+
+		for (int i = 0; i < remaining.length; i++) {
+			int[] newCandidate = new int[candidate.length + 1];
+			for (int j = 0; j < candidate.length; j++) {
+				newCandidate[j] = candidate[j];
+			}
+			newCandidate[newCandidate.length - 1] = remaining[i];
+
+			int[] newRemaining = new int[remaining.length - 1];
+			for (int j = 0; j < i; j++) {
+				newRemaining[j] = remaining[j];
+			}
+			for (int j = i; j < newRemaining.length; j++) {
+				newRemaining[j] = remaining[j + 1];
+			}
+
+			generateStatesHelper(newCandidate, newRemaining, index);
+		}
+	}
+	
+	private ArrayList<Integer> dijkstras(){
+		return null;
+	}
+	
+	private State[] indexToStates(ArrayList<Integer> indexs) {
+		return null;
+	}
+	
+}
