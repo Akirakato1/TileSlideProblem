@@ -10,6 +10,7 @@ public class GraphSolution {
 	private State[] states;
 	private Map<State, Integer> stateMap;
 	private List<Integer>[] graph;
+	private final Map<Integer, String> directionMap;
 
 	@SuppressWarnings("unchecked")
 	GraphSolution(int w, int h) {
@@ -18,6 +19,11 @@ public class GraphSolution {
 		states = new State[factorial(w * h)];
 		stateMap = new HashMap<State, Integer>();
 		graph = new List[factorial(w * h)];
+		directionMap= new HashMap<>();
+		directionMap.put(0,"up");
+		directionMap.put(1,"right");
+		directionMap.put(2,"down");
+		directionMap.put(3,"left");
 	}
 
 	public int find(State in, State out) {
@@ -27,7 +33,7 @@ public class GraphSolution {
 		if (stateMap.get(in) == null || stateMap.get(out) == null) {
 			throw new IllegalArgumentException("instate or outstate not formatted correctly");
 		}
-		
+		countReachableNodes();
 		//Run dijkstra's -> convert node indexes into list of states -> calculate the  direction to move at every state
 		return 0;
 	}
@@ -74,7 +80,12 @@ public class GraphSolution {
 	}
 	private void printIndexGraph(){
 		for(int i=0; i<graph.length;i++) {
-			System.out.println(i+" : "+graph[i]);
+			System.out.println("graph.addNode("+i+");");
+			for(int j=0;j<graph[i].size();j++){
+				System.out.println("graph.addLink("+i+", "+graph[i].get(j)+");");
+			}
+
+			//System.out.println(i+" : "+graph[i]);
 		}
 	}
 
@@ -168,6 +179,33 @@ public class GraphSolution {
 			output[i]=states[indexes.get(i)];
 		}
 		return output;
+	}
+
+	private String swapDirection(State from, State to){
+		int fromEmpty=from.getEmptySpot();
+		int toEmpty=to.getEmptySpot();
+		if (fromEmpty == toEmpty + w){
+			return directionMap.get(0);
+		} else if (fromEmpty == toEmpty - 1){
+			return directionMap.get(1);
+		}else if (fromEmpty == toEmpty - w){
+			return directionMap.get(2);
+		}else if (fromEmpty == toEmpty + 1){
+			return directionMap.get(3);
+		} else {
+			return from + " and "+to +" are not connected";
+		}
+
+	}
+
+	private void countReachableNodes(){
+		int count=0;
+		for(int i=0;i<graph.length;i++){
+			if(graph[i].size()>0){
+				count++;
+			}
+		}
+		System.out.println(count);
 	}
 	
 }
