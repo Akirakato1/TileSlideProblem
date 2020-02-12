@@ -1,6 +1,6 @@
 import java.util.Arrays;
 
-public class Main{
+public class DpSolution{
     
     //array M that stores the number of moves to that the state [i][j][k][l][m][n] 
     //intialised to Integer.MAX_VALUE

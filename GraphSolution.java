@@ -9,7 +9,7 @@ public class GraphSolution {
 	private final int w, h;
 	private State[] states;
 	private Map<State, Integer> stateMap;
-	private List<State>[] graph;
+	private List<Integer>[] graph;
 
 	@SuppressWarnings("unchecked")
 	GraphSolution(int w, int h) {
@@ -56,10 +56,11 @@ public class GraphSolution {
 		generateGraphHelper(in, 2, emptySpot);
 		generateGraphHelper(in, 3, emptySpot);
 		printGraph();
+		printIndexGraph();
 	}
 
 	private void initGraph() {
-		List<State> temp;
+		List<Integer> temp;
 		for (int i = 0; i < graph.length; i++) {
 				temp=new ArrayList<>();
 				graph[i]=temp;
@@ -68,8 +69,12 @@ public class GraphSolution {
 	
 	private void printGraph() {
 		for(int i=0; i<graph.length;i++) {
-			System.out.println("Node: "+states[i]+"\nNeighbour: "+graph[i]);
-			
+			System.out.println("Node: "+states[i]+"\nNeighbour: "+Arrays.toString(indexToStates(graph[i])));
+		}
+	}
+	private void printIndexGraph(){
+		for(int i=0; i<graph.length;i++) {
+			System.out.println(i+" : "+graph[i]);
 		}
 	}
 
@@ -82,15 +87,14 @@ public class GraphSolution {
 
 		State nextState = swap(currentState, direction, emptySpot);
 		int nextEmptySpot = nextState.getEmptySpot();
-		if (graph[stateMap.get(currentState)].contains(nextState)) {
+		if (graph[stateMap.get(currentState)].contains(stateMap.get(nextState))) {
 			return;
 		}
-		
 		System.out.println("currentState hash: "+stateMap.get(currentState)+"\nnextstate hash: "+stateMap.get(nextState));
 		System.out.println("currentState: "+currentState+"\nnextstate: "+nextState);
 		
-		graph[stateMap.get(currentState)].add(nextState);
-		graph[stateMap.get(nextState)].add(currentState);
+		graph[stateMap.get(currentState)].add(stateMap.get(nextState));
+		graph[stateMap.get(nextState)].add(stateMap.get(currentState));
 		
 		generateGraphHelper(nextState, 0, nextEmptySpot);
 		generateGraphHelper(nextState, 1, nextEmptySpot);
@@ -154,12 +158,16 @@ public class GraphSolution {
 		}
 	}
 	
-	private ArrayList<Integer> dijkstras(){
+	private List<Integer> dijkstras(){
 		return null;
 	}
 	
-	private State[] indexToStates(ArrayList<Integer> indexs) {
-		return null;
+	private State[] indexToStates(List<Integer> indexes) {
+		State[] output=new State[indexes.size()];
+		for(int i = 0; i<output.length;i++){
+			output[i]=states[indexes.get(i)];
+		}
+		return output;
 	}
 	
 }
