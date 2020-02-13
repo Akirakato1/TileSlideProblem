@@ -34,6 +34,18 @@ public class GraphSolution {
 			throw new IllegalArgumentException("instate or outstate not formatted correctly");
 		}
 		countReachableNodes();
+		printGraph();
+		printIndexGraph();
+
+		int V = graph.length;
+		Graph g = new Graph(V);
+		addEdges(g);
+		g.printGraph();
+		List<Integer> solutionIndexes=g.dijkstra(stateMap.get(out));
+		State[] solutionPath=indexToStates(solutionIndexes);
+		System.out.println(Arrays.toString(solutionPath));
+		System.out.println(Arrays.toString(statesToDirection(solutionPath)));
+		exportToHTML(solutionIndexes);
 		//Run dijkstra's -> convert node indexes into list of states -> calculate the  direction to move at every state
 		return 0;
 	}
@@ -64,8 +76,6 @@ public class GraphSolution {
 		generateGraphHelper(in, 1, emptySpot);
 		generateGraphHelper(in, 2, emptySpot);
 		generateGraphHelper(in, 3, emptySpot);
-		printGraph();
-		printIndexGraph();
 	}
 
 	private void initGraph() {
@@ -81,6 +91,7 @@ public class GraphSolution {
 			System.out.println(i+" Node: "+states[i]+"\nNeighbour: "+Arrays.toString(indexToStates(graph[i])));
 		}
 	}
+
 	private void printIndexGraph(){
 		for(int i=0; i<graph.length;i++) {
 			System.out.println("graph.addNode("+i+");");
@@ -171,14 +182,22 @@ public class GraphSolution {
 		}
 	}
 	
-	private List<Integer> dijkstras(){
-		return null;
-	}
 	
 	private State[] indexToStates(List<Integer> indexes) {
+		if(indexes==null){
+			return null;
+		}
 		State[] output=new State[indexes.size()];
 		for(int i = 0; i<output.length;i++){
 			output[i]=states[indexes.get(i)];
+		}
+		return output;
+	}
+
+	private String[] statesToDirection(State[] s){
+		String[] output=new String[s.length-1];
+		for(int i=0;i<s.length-1;i++){
+			output[i]=swapDirection(s[i],s[i+1]);
 		}
 		return output;
 	}
@@ -197,7 +216,6 @@ public class GraphSolution {
 		} else {
 			return from + " and "+to +" are not connected";
 		}
-
 	}
 
 	private void countReachableNodes(){
@@ -208,6 +226,23 @@ public class GraphSolution {
 			}
 		}
 		System.out.println(count);
+	}
+
+	private int[][] getAdjacencyMatrix(){
+		int[][] m=new int[graph.length][graph.length];
+		for(int i=0;i<10;i++){
+			for(Integer node: graph[i]){
+			m[i][node]=1;}
+		}
+		return m;
+	}
+
+	private void addEdges(Graph g){
+		for(int i=0; i<graph.length;i++) {
+			for(int j=0;j<graph[i].size();j++){
+				g.addEdge(i,(int)graph[i].get(j),1);
+			}
+		}
 	}
 	
 }
