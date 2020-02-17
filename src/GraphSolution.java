@@ -1,12 +1,8 @@
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.*;
 public class GraphSolution {
 
 	private final int w, h;
+	private Set<State> statesSet;
 	private State[] states;
 	private Map<State, Integer> stateMap;
 	private List<Integer>[] graph;
@@ -16,6 +12,7 @@ public class GraphSolution {
 	GraphSolution(int w, int h) {
 		this.w = w;
 		this.h = h;
+		statesSet=new HashSet<>();
 		states = new State[factorial(w * h)];
 		stateMap = new HashMap<State, Integer>();
 		graph = new List[factorial(w * h)];
@@ -33,7 +30,7 @@ public class GraphSolution {
 		if (stateMap.get(in) == null || stateMap.get(out) == null) {
 			throw new IllegalArgumentException("instate or outstate not formatted correctly");
 		}
-		countReachableNodes();
+		
 		printGraph();
 		printIndexGraph();
 
@@ -43,10 +40,12 @@ public class GraphSolution {
 		g.printGraph();
 		List<Integer> solutionIndexes=g.dijkstra(stateMap.get(out));
 		State[] solutionPath=indexToStates(solutionIndexes);
+		System.out.println(solutionIndexes);
 		System.out.println(Arrays.toString(solutionPath));
 		System.out.println(Arrays.toString(statesToDirection(solutionPath)));
-		exportToHTML(solutionIndexes);
+		//exportToHTML(solutionIndexes);
 		//Run dijkstra's -> convert node indexes into list of states -> calculate the  direction to move at every state
+		countReachableNodes();
 		return 0;
 	}
 
@@ -59,7 +58,24 @@ public class GraphSolution {
 		for (int i = 0; i < w * h; i++) {
 			nums[i] = i;
 		}*/
-		generateStatesHelper(empty, nums, new IntegerMutate(0));
+		generateStatesHelper(empty, nums);
+		populateStates(in);
+	}
+
+	private void populateStates(State in){
+		int index=0;
+		int inIndex=0;
+		State temp;
+		for(State s: statesSet){
+			if(s.equals(in)){
+				inIndex=index;
+			}
+			states[index]=s;
+			index++;
+		}
+		temp=states[0];
+		states[0]=states[inIndex];
+		states[inIndex]=temp;
 	}
 
 	private void generateMap() {
@@ -156,11 +172,10 @@ public class GraphSolution {
 		return acc;
 	}
 
-	private void generateStatesHelper(int[] candidate, int[] remaining, IntegerMutate index) {
+	private void generateStatesHelper(int[] candidate, int[] remaining) {
 		if (remaining.length == 0) {
-			System.out.println(index + "  " + Arrays.toString(candidate));
-			this.states[index.value] = new State(candidate);
-			index.value = index.value + 1;
+			statesSet.add(new State(candidate));
+			System.out.println(statesSet.size());
 		}
 
 		for (int i = 0; i < remaining.length; i++) {
@@ -178,7 +193,7 @@ public class GraphSolution {
 				newRemaining[j] = remaining[j + 1];
 			}
 
-			generateStatesHelper(newCandidate, newRemaining, index);
+			generateStatesHelper(newCandidate, newRemaining);
 		}
 	}
 	
