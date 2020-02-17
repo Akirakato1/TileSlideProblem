@@ -34,7 +34,7 @@ public class GraphSolution {
 		printGraph();
 		printIndexGraph();
 
-		int V = graph.length;
+		int V = permutationNum(in);
 		Graph g = new Graph(V);
 		addEdges(g);
 		g.printGraph();
@@ -46,6 +46,8 @@ public class GraphSolution {
 		//exportToHTML(solutionIndexes);
 		//Run dijkstra's -> convert node indexes into list of states -> calculate the  direction to move at every state
 		countReachableNodes();
+		System.out.println(permutationNum(new State(0,1,2,3,4,5)));
+		System.out.println(permutationNum(new State(0,1,2,1,2,1)));
 		return 0;
 	}
 
@@ -254,10 +256,40 @@ public class GraphSolution {
 
 	private void addEdges(Graph g){
 		for(int i=0; i<graph.length;i++) {
+			if(states[i]==null){
+				System.out.println("continued");
+				continue;
+			}
+			System.out.println("not continue");
 			for(int j=0;j<graph[i].size();j++){
 				g.addEdge(i,(int)graph[i].get(j),1);
 			}
 		}
 	}
-	
+
+	private int permutationNum(State in) {
+		int[] inputs=in.getInputs();
+		Arrays.sort(inputs);
+		System.out.println(Arrays.toString(inputs));
+		int i=0;
+		int currentVal;
+		int answer=factorial(inputs.length);
+		int currentAcc=0;
+		while(i<inputs.length){
+			currentVal=inputs[i];
+			i++;
+			for(int j=i;j<inputs.length;j++){
+				if(inputs[j]==currentVal){
+					currentAcc++;
+					i++;
+				}else{
+					answer=answer/factorial(currentAcc);
+					currentAcc=0;
+					i++;
+					break;
+				}
+			}
+		}
+		return answer;
+	}
 }
