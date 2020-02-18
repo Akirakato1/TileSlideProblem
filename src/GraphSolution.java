@@ -269,27 +269,19 @@ public class GraphSolution {
 
 	private int permutationNum(State in) {
 		int[] inputs=in.getInputs();
-		Arrays.sort(inputs);
-		System.out.println(Arrays.toString(inputs));
-		int i=0;
-		int currentVal;
 		int answer=factorial(inputs.length);
-		int currentAcc=0;
-		while(i<inputs.length){
-			currentVal=inputs[i];
-			i++;
-			for(int j=i;j<inputs.length;j++){
-				if(inputs[j]==currentVal){
-					currentAcc++;
-					i++;
-				}else{
-					answer=answer/factorial(currentAcc);
-					currentAcc=0;
-					i++;
-					break;
-				}
+		Map<Integer, Integer> map=new HashMap<>();
+		for(int i=0;i<inputs.length;i++){
+			if(map.get(inputs[i])==null){
+				map.put(inputs[i],1);
+			}else{
+				map.put(inputs[i],map.get(inputs[i])+1);
 			}
 		}
+		for(Integer num:map.values()){
+			answer=answer/factorial(num);
+		}
+
 		return answer;
 	}
 }
